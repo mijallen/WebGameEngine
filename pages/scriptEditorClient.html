@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="UTF-8"/>
+  <title>Script Editor</title>
+  <script src="scripts/angular.js"></script>
+  <style>
+    .selection:hover {
+        background-color: lightgray;
+        cursor: pointer;
+    }
+    .selection:active {
+        background-color: gray;
+    }
+  </style>
+ </head>
+ <body>
+
+<!-- View/Controller -->
+  <h1>Script Editor</h1>
+  <div ng-app="app" ng-controller="controller">
+   <div style="width:30%;height:250px;display:inline-block;vertical-align:top;border:1px solid lightgray">
+    <p class="selection" ng-repeat="script in fileList" ng-click="getFileContents(script)" ng-bind="script"></p>
+   </div>
+   <div style="width:60%;display:inline-block">
+    <textarea ng-model="fileContents" rows=15 cols=75 style="resize:none;overflow-y:scroll"></textarea>
+    <button ng-click="postFileContents()">save</button>
+    <button ng-click="requestRepublish()">republish</button>
+   </div>
+   <br/>
+   <iframe id="frame" width="90%" height="450px" style="border:1px solid black" src="/static/preview.html"></iframe>
+  </div>
+
+<!-- Model -->
+  <script>
+    var scriptsBaseURI = "http://localhost:8080/service/scripts/";
+    var app = angular.module('app', []);
+
+    app.controller('controller', function($scope, $http) {
+        $scope.fileContents = "Please select a file.";
+        $scope.fileList = [];
+        $scope.selectedFile = "";
+
+        $scope.getFileList = function() {
+            $http.get(scriptsBaseURI).then(
+                function(response) {
+                    $scope.fileList = response.data;
+                }
+            );
+        };
+
+        $scope.getFileContents = function(fileName) {
+            var getFileContentsURI = scriptsBaseURI + encodeURIComponent(fileName);
+            console.log("getting contents of " + getFileContentsURI);
+
+            $scope.selectedFile = fileName;
+
+            $http.get(getFileContentsURI).then(
+                function(response) {
+                    $scope.fileContents = response.data;
+                }
+            );
+        };
+
+        $scope.postFileContents = function() {
+            var postFileContentsURI = scriptsBaseURI + encodeURIComponent($scope.selectedFile);
+            console.log("posting contents to " + postFileContentsURI);
+
+            if ($scope.selectedFile === "") {
+                console.log("cannot save contents: no file selected.");
+                return;
+            }
+
+            $http.put(postFileContentsURI, $scope.fileContents);
+        };
+
+        $scope.requestRepublish = function() {
+            var postRepublishRequestURI = "http://localhost:8080/service/compile/"
+            $http.put(postRepublishRequestURI).then(
+                function(response) {
+                    document.getElementById("frame").contentWindow.location.reload(true);
+                }
+            );
+        };
+
+        $scope.getFileList();
+    });
+  </script>
+
+ </body>
+</html>

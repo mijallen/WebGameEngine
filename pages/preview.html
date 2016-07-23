@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="UTF-8"/>
+  <title>Engine Setup Test</title>
+ </head>
+ <body>
+  <canvas id="canvas"></canvas>
+  <script>
+    var canvas = document.getElementById("canvas");
+    canvas.width = 960; // qHD resolution
+    canvas.height = 540;
+
+    var gl = canvas.getContext("experimental-webgl");
+    gl.clearColor(0.0, 0.0, 0.5, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+  </script>
+  <script src="scripts/HashTable.js"></script>
+  <script src="scripts/ShaderProgram.js"></script>
+  <script src="scripts/VertexBufferSet.js"></script>
+  <script src="scripts/script.js"></script>
+ </body>
+</html>
