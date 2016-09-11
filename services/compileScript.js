@@ -14,7 +14,19 @@ var exec = require('child_process').execSync;
 
 router.put('/',
     function(request, response) {
-        exec("tsc ./scripts/script.ts ./engine/ShaderProgram.d.ts ./engine/VertexBufferSet.d.ts --outFile ./pages/scripts/script.js");
+        //var command = "tsc ";
+
+        //command += "./engine/ShaderProgram.d.ts "; // order of compilation matters
+        //command += "./engine/VertexBufferSet.d.ts ";
+        //command += "./engine/Matrix4f.ts ";
+        //command += "./scripts/script.ts ";
+
+        //command += "--outFile ./pages/scripts/script.js"
+
+        // temporary workaround for development, will need to fix this to be more dynamic
+        command = "compile";
+
+        exec(command);
 
         response.writeHead(204);
         response.end();

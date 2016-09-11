@@ -20,7 +20,7 @@ ShaderProgram - contains handles for shaders and program, cached locations
 
 function ShaderProgram(vertexShaderSource, fragmentShaderSource) {
     var m_attributeLocations = new HashTable();
-    //m_uniformLocations = new HashTable();
+    var m_uniformLocations = new HashTable();
 
     var m_vertexHandle = gl.createShader(gl.VERTEX_SHADER);
     var m_fragmentHandle = gl.createShader(gl.FRAGMENT_SHADER);
@@ -63,5 +63,55 @@ function ShaderProgram(vertexShaderSource, fragmentShaderSource) {
         }
 
         gl.vertexAttribPointer(attributeLocation, 3, gl.FLOAT, false, 0, 0);
+    };
+
+    this.useUniformFloat = function(uniformName, floatValue) {
+        var uniformLocation = m_uniformLocations.get(uniformName);
+
+        if (uniformLocation === undefined) {
+            uniformLocation = gl.getUniformLocation(m_programHandle, uniformName);
+
+            m_uniformLocations.insert(uniformName, uniformLocation);
+        }
+
+        gl.uniform1f(uniformLocation, floatValue);
+    };
+
+    this.useUniformMatrix4 = function(uniformName, matrix) {
+        var uniformLocation = m_uniformLocations.get(uniformName);
+
+        if (uniformLocation === undefined) {
+            uniformLocation = gl.getUniformLocation(m_programHandle, uniformName);
+
+            m_uniformLocations.insert(uniformName, uniformLocation);
+        }
+
+        gl.uniformMatrix4fv(uniformLocation, false, matrix);
+    };
+
+    var uniformFunctionByType = {};
+// can add entry for bool which calls uniform1i, but evaluates boolean to 1 or 0
+    uniformFunctionByType["float"] = function(uniformLocation, uniformValue) {
+        gl.uniform1f(uniformLocation, uniformValue);
+    };
+
+    uniformFunctionByType["vec3"] = function(uniformLocation, uniformValue) {
+        gl.uniform3fv(uniformLocation, uniformValue);
+    };
+
+    uniformFunctionByType["mat4"] = function(uniformLocation, uniformValue) {
+        gl.uniformMatrix4fv(uniformLocation, false, uniformValue);
+    };
+
+    this.useUniform = function(uniformName, uniformType, uniformValue) {
+        var uniformLocation = m_uniformLocations.get(uniformName);
+
+        if (uniformLocation === undefined) {
+            uniformLocation = gl.getUniformLocation(m_programHandle, uniformName);
+
+            m_uniformLocations.insert(uniformName, uniformLocation);
+        }
+
+        uniformFunctionByType[uniformType](uniformLocation, uniformValue);
     };
 }

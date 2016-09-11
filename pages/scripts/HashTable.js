@@ -16,4 +16,10 @@ function HashTable() {
     this.get = function(key) {
         return m_hashMap[key];
     };
+
+    this.keys = function() {
+        var keyArray = [];
+        for (var key in m_hashMap) keyArray.push(key);
+        return keyArray;
+    };
 }
