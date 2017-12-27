@@ -1,98 +1,155 @@
-// sample program to test game engine code
+/* create canvas
+let canvas = document.createElement("canvas");
+canvas.width = 800;
+canvas.height = 600;
+document.body.appendChild(canvas);
 
-let vertex: number[] = [
-    -1.0, +1.0, 0.0,
-    -1.0, -1.0, 0.0,
-    +1.0, -1.0, 0.0,
-    +1.0, +1.0, 0.0
-];
+// initialize WebGL
+let gl = canvas.getContext("experimental-webgl");
+gl.clearColor(0, 0, 0.5, 1);
+gl.clear(gl.COLOR_BUFFER_BIT);
+gl.enable(gl.DEPTH_TEST);
+gl.depthFunc(gl.LEQUAL);*/
 
-let vertex2: number[] = [
-    -0.5, +0.5, 0.0,
-    -0.5, -0.5, 0.0,
-    +0.5, -0.5, 0.0,
-    +0.5, +0.5, 0.0
-];
+// custom scene with a light
+class TestLightScene extends Scene {
+    private light: Vector3f;
 
-let color: number[] = [
-    1.0, 0.0, 0.0,
-    1.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 0.0, 1.0
-];
+    public constructor() {
+        super();
 
-let testVS: string =
-"attribute vec3 vertex;" +"\n"+
-"attribute vec3 color;" +"\n"+
-"" +"\n"+
-"uniform mat4 object_worldMatrix;" +"\n"+
-"uniform mat4 camera_viewMatrix;" +"\n"+
-"uniform mat4 camera_projectionMatrix;" +"\n"+
-"" +"\n"+
-"varying vec3 vertexColor;" +"\n"+
-"" +"\n"+
-"void main(void) {" +"\n"+
-"   vertexColor = color;" +"\n"+
-"   gl_Position = camera_projectionMatrix * camera_viewMatrix * object_worldMatrix * vec4(vertex, 1.0);" +"\n"+
-"}" +"\n"+
-""
-;
+        this.light = new Vector3f(-2, 0, -2);
+    }
+}
 
-let testFS: string =
-"precision mediump float;" +"\n"+
-"uniform float camera_scale;" +"\n"+
-"varying vec3 vertexColor;" +"\n"+
-"" +"\n"+
-"void main(void) {" +"\n"+
-"   gl_FragColor = vec4(camera_scale * vertexColor, 1.0);" +"\n"+
-"}" +"\n"+
-""
-;
+// custom object with a hue
+class TestColorObject extends SpatialObject {
+    private hue: number;
 
-let testGeometry: Geometry = new Geometry(vertex, [0,1,2,0,2,3]);
-testGeometry.addFloatAttribute("color", color, 3);
+    public constructor() {
+        super();
 
-let testGeometry2: Geometry = new Geometry(vertex2, [0,1,2,0,2,3]);
-testGeometry2.addFloatAttribute("color", color, 3);
+        this.transform.setScale(1.5);
+        this.transform.setPosition(new Vector3f(0, 0, -5));
 
-let testShader: Shader = new Shader(testVS, testFS);
-testShader.addAttributeVariable("vertex");
-testShader.addAttributeVariable("color");
-testShader.addUniformVariable("object_worldMatrix");
-testShader.addUniformVariable("camera_viewMatrix");
-testShader.addUniformVariable("camera_projectionMatrix");
-testShader.addUniformVariable("camera_scale");
+        this.hue = 0;
+        this.setMapping("color",
+            function (self: TestColorObject, name: string): Vector3f {
+                let color = new Vector3f(
+                    0.5 * Math.sin(self.hue + 0 * Math.PI / 3) + 0.5,
+                    0.5 * Math.sin(self.hue + 2 * Math.PI / 3) + 0.5,
+                    0.5 * Math.sin(self.hue + 4 * Math.PI / 3) + 0.5
+                );
+                self.hue += 0.01 * Math.PI;
+                return color;
+            }
+        );
+    }
+}
 
-let testObj: GameObject = new GameObject(testGeometry, testShader);
-let testObj2: GameObject = new GameObject(testGeometry2, testShader);
-testObj2.getTransform().setPosition(-0.5, 0.5, 0.0);
-
-let testGameManager: GameManager = new GameManager();
-
-testGameManager.addGameObject(testObj);
-testGameManager.addGameObject(testObj2);
-
-testGameManager.getCamera().getViewTransform().setPosition(-0.25, 0.0, 3.0);
-testGameManager.getCamera().addFloatValue("scale", 0.75);
-
-testGameManager.draw();
-
-let frameCount: number = 0;
-
-setInterval(
-    function() {
-        frameCount += 1;
-
-        testObj2.getTransform().setPosition(Math.cos(0.1 * frameCount), Math.sin(0.1 * frameCount), 0.0);
-        testObj2.getTransform().setRotation(0.0, 0.1 * frameCount, 0.0);
-        testGameManager.draw();
-    },
-    100
+// shader that supports texture and lighting
+let textureColorLightShader = new Shader();
+textureColorLightShader.setSource(
+    "attribute vec3 pos, normal;\n" +
+    "attribute vec2 texcoord;\n" +
+    "uniform mat4 projectionMatrix, viewMatrix, worldMatrix;\n" +
+    "uniform vec3 light;\n" +
+    "varying vec3 vnormal, vlight;\n" +
+    "varying vec2 vtex;\n" +
+    "void main(void) {\n" +
+    "    vec4 worldVec = worldMatrix * vec4(pos, 1.0);\n" +
+    "    vnormal = mat3(worldMatrix) * normal;\n" +
+    "    vlight = light - worldVec.xyz;\n" +
+    "    vtex = texcoord;\n" +
+    "    gl_Position = projectionMatrix * viewMatrix * worldVec;\n" +
+    "}\n",
+    "precision mediump float;\n" +
+    "uniform vec3 color;\n" +
+    "uniform sampler2D tex;\n" +
+    "varying vec3 vnormal, vlight;\n" +
+    "varying vec2 vtex;\n" +
+    "void main(void) {\n" +
+    "    vec3 n = normalize(vnormal);\n" +
+    "    vec3 l = normalize(vlight);\n" +
+    "    vec3 texture = texture2D(tex, vtex).rgb;\n" +
+    "    float diffuse = max(dot(n, l), 0.0);\n" +
+    "    gl_FragColor = vec4(texture * diffuse * color, 1.0);\n" +
+    "}\n"
 );
 
-document.onkeydown = function(e) {
-    let keycode = e.which;
+// a 24-vertex cube with texture coordinates and normals
+let textureMappedCube = new Geometry();
+textureMappedCube.setAttribute(
+    "pos",
+    new Float32Array([
+        -1, +1, -1,  -1, -1, -1,  -1, -1, +1,  -1, +1, +1,
+        -1, +1, +1,  -1, -1, +1,  +1, -1, +1,  +1, +1, +1,
+        +1, +1, +1,  +1, -1, +1,  +1, -1, -1,  +1, +1, -1,
+        +1, +1, -1,  +1, -1, -1,  -1, -1, -1,  -1, +1, -1
+    ])
+);
+textureMappedCube.setAttribute(
+    "normal",
+    new Float32Array([
+        -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,
+        0, 0, +1,  0, 0, +1,  0, 0, +1,  0, 0, +1,
+        +1, 0, 0,  +1, 0, 0,  +1, 0, 0,  +1, 0, 0,
+        0, 0, -1,  0, 0, -1,  0, 0, -1,  0, 0, -1
+    ])
+);
+textureMappedCube.setAttribute(
+    "texcoord",
+    new Float32Array([
+        0, 1,  0, 0,  1, 0,  1, 1,
+        0, 1,  0, 0,  1, 0,  1, 1,
+        0, 1,  0, 0,  1, 0,  1, 1,
+        0, 1,  0, 0,  1, 0,  1, 1
+    ])
+);
+textureMappedCube.setIndexArray(
+    new Uint16Array([
+        0, 1, 2, 0, 2, 3,
+        4, 5, 6, 4, 6, 7,
+        8, 9, 10, 8, 10, 11,
+        12, 13, 14, 12, 14, 15
+    ])
+);
 
-    if (keycode == 37) {testGameManager.getCamera().getViewTransform().setPosition(-1.0, 0.0, 3.0);}
-    if (keycode == 39) {testGameManager.getCamera().getViewTransform().setPosition(+1.0, 0.0, 3.0);}
+// a black-and-white noise/static texture
+let noiseTextureData = new Uint8Array(256 * 256 * 4);
+for (let i = 0; i < noiseTextureData.length; i += 4) {
+    let value = Math.round(255 * Math.random());
+    noiseTextureData[i + 0] = value;
+    noiseTextureData[i + 1] = value;
+    noiseTextureData[i + 2] = value;
+    noiseTextureData[i + 3] = 255;
 }
+
+let noiseTexture = new Texture();
+noiseTexture.setPixels(256, 256, noiseTextureData);
+
+let noiseColorLightMaterial = new Material();
+noiseColorLightMaterial.setShader(textureColorLightShader);
+noiseColorLightMaterial.setTexture("tex", noiseTexture);
+
+let colorCube = new TestColorObject();
+colorCube.setGeometry(textureMappedCube);
+colorCube.setMaterial(noiseColorLightMaterial);
+
+let lightScene = new TestLightScene();
+lightScene.addGameObject(colorCube);
+
+let perspectiveCamera = new SpatialCamera();
+perspectiveCamera.setPosition(new Vector3f(-2, 0, 0));
+perspectiveCamera.setRotation(-0.5);
+
+drawScene(lightScene, perspectiveCamera);
+
+let objectRotation = 0;
+
+// perform render every 32ms (about 30FPS)
+setInterval(function () {
+    objectRotation += 0.01;
+    colorCube.setRotation(objectRotation);
+    drawScene(lightScene, perspectiveCamera);
+}, 32);

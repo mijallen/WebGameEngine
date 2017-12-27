@@ -1,5 +1,5 @@
 declare class HashTable {
-    constructor();
+    public constructor();
 
     public insert(key: string, value: any): void;
     public clear(): void;

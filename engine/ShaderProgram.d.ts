@@ -1,8 +1,8 @@
 declare class ShaderProgram {
-    constructor (vertexShaderSource: string, fragmentShaderSource: string);
-    setAsCurrent(): void;
-    useAttributeVec3(attributeName: string): void;
-    useUniformFloat(uniformName: string, floatValue: number): void;
-    useUniformMatrix4(uniformName: string, matrix: Float32Array): void;
-    useUniform(uniformName: string, uniformType: string, uniformValue: any);
+    public constructor();
+
+    public compileAndLink(vertexShaderSource: string, fragmentShaderSource: string): void;
+    public setAsCurrent(): void;
+    public useAttributeVec(attributeName: string, dimensions: number): void;
+    public useUniform(uniformName: string, uniformType: string, uniformValue: number|Float32Array|Int32Array|ArrayBuffer): void;
 }

@@ -1,6 +1,8 @@
 declare class VertexBufferSet {
-    constructor(vertexArray: Float32Array, indexArray: Uint16Array);
-    setAsCurrent(attributeName: string): void;
-    draw(): void;
-    addNewAttribute(attributeName: string, attributeArray: Float32Array): void;
+    public constructor();
+
+    public setIndexArray(indexArray: Uint16Array): void;
+    public setAsCurrent(attributeName: string): void;
+    public draw(): void;
+    public setAttribute(attributeName: string, attributeArray: Float32Array): void;
 }

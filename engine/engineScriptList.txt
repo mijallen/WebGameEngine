@@ -1,22 +1,29 @@
 HashTable.d.ts
 ShaderProgram.d.ts
 VertexBufferSet.d.ts
+Texture2D.d.ts
 
-Matrix4f.ts
+TypeDefinitions.ts
+Vector2.ts
 Vector3.ts
+Matrix2f.ts
+Matrix4f.ts
 
-UniformVariable.ts
-CachedTransform.ts
-SpatialTransform.ts
-PerspectiveTransform.ts
+Utility.ts
 
-GameEntity.ts
-Geometry.ts
 Shader.ts
+Geometry.ts
+Texture.ts
+UniformContainer.ts
 
-UniformBearer.ts
-Camera.ts
-GameObject.ts
 Material.ts
+GameObject.ts
+Scene.ts
+Camera.ts
+RenderContext.ts
 
-GameManager.ts
+SpatialObject.ts
+SpatialCamera.ts
+Transform.ts
+
+SceneDrawing.ts

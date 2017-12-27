@@ -1,39 +1,29 @@
-class GameObject extends UniformBearer {
-    geom: Geometry;
-    shad: Shader;
-    tran: SpatialTransform;
+// -- GAMEOBJECT -- //
 
-    //unif: UniformSet;
+class GameObject extends UniformContainer {
+    private geometry: Geometry;
+    private material: Material;
 
-    constructor(vertexData: Geometry, effect: Shader) {
+    constructor() {
         super();
 
-        this.geom = vertexData;
-        this.shad = effect;
-        this.tran = new SpatialTransform();
-
-        //this.unif = new UniformSet();
-        //this.unif.addTransform("worldMatrix", this.tran);
-        this.addTransform("worldMatrix", this.tran);
+        this.geometry = null;
+        this.material = null;
     }
 
     public getGeometry(): Geometry {
-        return this.geom;
+        return this.geometry;
     }
 
-    public getShader(): Shader {
-        return this.shad;
+    public setGeometry(geometry: Geometry): void {
+        this.geometry = geometry;
     }
 
-    public getTransform(): SpatialTransform {
-        return this.tran;
+    public getMaterial(): Material {
+        return this.material;
     }
-/*
-    public getUniformSet(): UniformSet {
-        return this.unif;
+
+    public setMaterial(material: Material): void {
+        this.material = material;
     }
-*/
-    // need to refactor to accept Material rather than Shader
-    // need uniformset for things like worldMatrix, position, scale, etc.
-    // may also have some overlap with Material uniforms (bumpiness, shininess, etc.)
 }
