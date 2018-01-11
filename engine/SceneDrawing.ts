@@ -1,28 +1,27 @@
 // -- SCENE DRAWING FUNCTIONS -- //
 // should this be put in a singleton or static class?
 
-// process to decode UVL strings and traverse given renderContext
-function getUniformValue(uniformName: string, renderContext: RenderContext): UniformData {
-    let value = renderContext.getGameObject().getValue(uniformName);
+function getUniformVariable(uniformName: string, renderContext: RenderContext): UniformVariable | number {
+    let value = renderContext.getGameObject().getUniform(uniformName);
     if (value != undefined) return value;
 
-    value = renderContext.getMaterial().getValue(uniformName);
+    value = renderContext.getMaterial().getUniform(uniformName);
     if (value != undefined) return value;
 
-    value = renderContext.getCamera().getValue(uniformName);
+    value = renderContext.getCamera().getUniform(uniformName);
     if (value != undefined) return value;
 
-    value = renderContext.getScene().getValue(uniformName);
+    value = renderContext.getScene().getUniform(uniformName);
     if (value != undefined) return value;
 
-    console.error("unable to find value for name " + uniformName);
-    return value;
+    console.error("unable to find uniform variable for name " + uniformName);
+    return undefined;
 }
 
 function render(renderContext: RenderContext): void {
     let geometry: Geometry = renderContext.getGameObject().getGeometry();
     let shader: Shader = renderContext.getMaterial().getShader();
-    //let textures: Texture[] = renderContext.getMaterial().getTextures();
+    let currentTextureLayer = 0;
 
     shader.setAsCurrent();
 
@@ -34,8 +33,17 @@ function render(renderContext: RenderContext): void {
 
     // support for texture handling (determine type of uniform variable here or in getUniformValue)
     for (let uniformName of shader.getUniforms()) {
-        let value = getUniformValue(uniformName, renderContext);
-        shader.useUniform(uniformName, value);
+        let uniform = getUniformVariable(uniformName, renderContext);
+        if (typeof uniform == "number") shader.useUniform(uniformName, uniform);
+        else {
+            if (uniform.getTypeName() != "sampler2D") shader.useUniform(uniformName, uniform.getData());
+            else {
+                let texture = <Texture>uniform;
+                texture.setAsCurrent(currentTextureLayer);
+                shader.useUniform(uniformName, currentTextureLayer);
+                currentTextureLayer++;
+            }
+        }
     }
 
     geometry.draw();

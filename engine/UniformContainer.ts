@@ -7,22 +7,16 @@ abstract class UniformContainer {
         this.uniformMapping = new Map<string, (self: UniformContainer, name: string) => UniformVariable | number>();
     }
 
-    public getValue(name: string): UniformData {
-        let uniform = null;
-
+    public getUniform(name: string): UniformVariable | number {
         if (this.uniformMapping.has(name)) {
-            uniform = this.uniformMapping.get(name)(this, name);
+            return this.uniformMapping.get(name)(this, name);
         }
         else {
-            uniform = <UniformVariable>this[name];
-            if (uniform == undefined) return undefined; // more elegant solution?
+            return <UniformVariable>this[name];
         }
-
-        if (typeof uniform == "number") return uniform;
-        return uniform.getData();
     }
 
-    protected setMapping(name: string, mapFunc: (self: UniformContainer, name: string) => UniformVariable | number) {
+    protected setMapping(name: string, mapFunc: (self: UniformContainer, name: string) => UniformVariable | number): void {
         this.uniformMapping.set(name, mapFunc);
     }
 }

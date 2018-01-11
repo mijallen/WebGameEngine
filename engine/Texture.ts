@@ -1,6 +1,13 @@
 // -- TEXTURE -- //
 
-class Texture {
+class Texture implements UniformVariable {
+    // UniformVariable interface
+    public getData(): AttributeAggregateData { return null; }
+    public getTypeName(): string { return "sampler2D"; }
+    public toString(): string {
+        return (this.width + "x" + this.height + " texture");
+    }
+
     private texture2D: any;
     private pixelData: Uint8Array;
     private width: number;

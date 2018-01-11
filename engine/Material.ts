@@ -3,16 +3,12 @@
 class Material extends UniformContainer {
     private shader: Shader;
     private textures: Map<string, Texture>;
-    private textureLayers: Map<string, number>;
-    private currentLayer: number;
 
     public constructor() {
         super();
 
         this.shader = null;
         this.textures = new Map<string, Texture>();
-        this.textureLayers = new Map<string, number>();
-        this.currentLayer = 0;
     }
 
     public getShader(): Shader {
@@ -28,12 +24,8 @@ class Material extends UniformContainer {
         this.textures.set(name, texture);
 
         if (!alreadySet) {
-            this.textureLayers.set(name, this.currentLayer++);
-
-            this.setMapping(name, function (self: Material, name: string): number {
-                let layer: number = self.textureLayers.get(name);
-                self.textures.get(name).setAsCurrent(layer);
-                return layer;
+            this.setMapping(name, function (self: Material, name: string): Texture {
+                return self.textures.get(name);
             });
         }
     }
