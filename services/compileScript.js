@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-var exec = require('child_process').execSync;
+var exec = require('child_process').exec;
 
 /*
     REST Service API:
@@ -14,22 +14,17 @@ var exec = require('child_process').execSync;
 
 router.put('/',
     function(request, response) {
-        //var command = "tsc ";
+        var command = "tsc";
 
-        //command += "./engine/ShaderProgram.d.ts "; // order of compilation matters
-        //command += "./engine/VertexBufferSet.d.ts ";
-        //command += "./engine/Matrix4f.ts ";
-        //command += "./scripts/script.ts ";
+        exec(command, function(error, stdout, stderr) {
+            console.log("compiling source...");
+            if (stdout) console.log(stdout);
+            if (stderr) console.error(stderr);
+            console.log("done compiling.");
 
-        //command += "--outFile ./pages/scripts/script.js"
-
-        // temporary workaround for development, will need to fix this to be more dynamic
-        command = "compile";
-
-        exec(command);
-
-        response.writeHead(204);
-        response.end();
+            response.writeHead(204);
+            response.end();
+        });
     }
 );
 

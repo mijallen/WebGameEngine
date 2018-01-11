@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+        "outFile": "pages/scripts/script.js",
+        "target": "ES6"
+    },
+    "files": [
+        "engine/HashTable.d.ts",
+        "engine/ShaderProgram.d.ts",
+        "engine/VertexBufferSet.d.ts",
+        "engine/Texture2D.d.ts",
+        "engine/TypeDefinitions.ts",
+        "engine/Vector2.ts",
+        "engine/Vector3.ts",
+        "engine/Matrix2f.ts",
+        "engine/Matrix4f.ts",
+        "engine/Utility.ts",
+        "engine/Shader.ts",
+        "engine/Geometry.ts",
+        "engine/Texture.ts",
+        "engine/UniformContainer.ts",
+        "engine/Material.ts",
+        "engine/GameObject.ts",
+        "engine/Scene.ts",
+        "engine/Camera.ts",
+        "engine/RenderContext.ts",
+        "engine/SpatialObject.ts",
+        "engine/SpatialCamera.ts",
+        "engine/Transform.ts",
+        "engine/SceneDrawing.ts",
+        "scripts/script.ts"
+    ]
+}
