@@ -8,6 +8,7 @@
         "engine/ShaderProgram.d.ts",
         "engine/VertexBufferSet.d.ts",
         "engine/Texture2D.d.ts",
+        "engine/FileLoader.d.ts",
         "engine/TypeDefinitions.ts",
         "engine/Vector2.ts",
         "engine/Vector3.ts",
@@ -27,6 +28,7 @@
         "engine/SpatialCamera.ts",
         "engine/Transform.ts",
         "engine/SceneDrawing.ts",
+        "engine/MediaLoader.ts",
         "scripts/script.ts"
     ]
 }

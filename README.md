@@ -44,3 +44,9 @@ to popular platforms beyond HTML5 (like Windows, Mac, Linux, iOS, and Android).
 * Version control and visual diffs for user scripts, levels, and ideally game media
 * A live chat or forum system for discussing game development with team
 * If possible, a way to write and host game servers for multi-player games
+
+## Current Image/Texture Handling:
+A utility, tga2bintex has been added to the utilities/ folder.
+It is a standalone executable which just requires a C++ compiler to build.
+Try adding a TGA file to the media/images/ folder then running tga2bintex on it.
+This should generate a BINTEX file in the same folder that can be used by the MediaLoader class.

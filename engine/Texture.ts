@@ -12,6 +12,7 @@ class Texture implements UniformVariable {
     private pixelData: Uint8Array;
     private width: number;
     private height: number;
+    private bitDepth: number;
 
     private dirty: boolean;
 
@@ -20,21 +21,23 @@ class Texture implements UniformVariable {
         this.pixelData = null;
         this.width = 0;
         this.height = 0;
+        this.bitDepth = 0;
 
         this.dirty = false;
     }
 
-    public setPixels(width: number, height: number, pixelData: Uint8Array): void {
+    public setPixels(width: number, height: number, bitDepth: number, pixelData: Uint8Array): void {
         this.pixelData = pixelData;
         this.width = width;
         this.height = height;
+        this.bitDepth = bitDepth;
 
         this.dirty = true;
     }
 
     public setAsCurrent(layer: number): void {
         if (this.dirty) {
-            this.texture2D.setPixels(this.width, this.height, this.pixelData);
+            this.texture2D.setPixels(this.width, this.height, this.bitDepth, this.pixelData);
 
             this.dirty = false;
         }

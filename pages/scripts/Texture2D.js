@@ -22,9 +22,11 @@ function Texture2D() {
         gl.bindTexture(gl.TEXTURE_2D, m_textureHandle);
     };
 
-    this.setPixels = function(width, height, pixelData) {
-        this.setAsCurrent(0);
+    this.setPixels = function(width, height, bitDepth, pixelData) {
+        var format = gl.RGBA;
+        if (bitDepth == 24) format = gl.RGB;
 
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixelData);
+        this.setAsCurrent(0);
+        gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, gl.UNSIGNED_BYTE, pixelData);
     };
 }

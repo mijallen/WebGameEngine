@@ -3,3 +3,9 @@ pages/scripts/angular.js
 
 # generated file
 pages/scripts/script.js
+
+# user images and BINTEX conversions
+media/images/*
+
+# built utilities
+utilities/**.exe

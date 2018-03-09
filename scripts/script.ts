@@ -116,17 +116,16 @@ textureMappedCube.setIndexArray(
 );
 
 // a black-and-white noise/static texture
-let noiseTextureData = new Uint8Array(256 * 256 * 4);
-for (let i = 0; i < noiseTextureData.length; i += 4) {
+let noiseTextureData = new Uint8Array(512 * 512 * 3);
+for (let i = 0; i < noiseTextureData.length; i += 3) {
     let value = Math.round(255 * Math.random());
     noiseTextureData[i + 0] = value;
     noiseTextureData[i + 1] = value;
     noiseTextureData[i + 2] = value;
-    noiseTextureData[i + 3] = 255;
 }
 
 let noiseTexture = new Texture();
-noiseTexture.setPixels(256, 256, noiseTextureData);
+noiseTexture.setPixels(512, 512, 24, noiseTextureData);
 
 let noiseColorLightMaterial = new Material();
 noiseColorLightMaterial.setShader(textureColorLightShader);
@@ -153,3 +152,7 @@ setInterval(function () {
     colorCube.setRotation(objectRotation);
     drawScene(lightScene, perspectiveCamera);
 }, 32);
+
+// test BINTEX texture loading
+let textureLoader = new MediaLoader();
+textureLoader.loadTexture("FireBase.tga", noiseTexture);

@@ -16,3 +16,5 @@ app.use('/service/scripts', scriptEditorService);
 
 var compileScriptService = require('./services/compileScript');
 app.use('/service/compile', compileScriptService);
+
+app.use('/media', express.static('media'));
