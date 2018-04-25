@@ -22,6 +22,13 @@ class SpatialObject extends GameObject {
         this.transform.setPosition(position);
     }
 
+    public getScale(): Vector3f {
+        return this.transform.getScale();
+    }
+    public setScale(scale: Vector3f) {
+        this.transform.setScale(scale);
+    }
+
     public getRotation(): number {
         return this.transform.getRotation();
     }

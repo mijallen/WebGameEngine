@@ -92,29 +92,29 @@ class Matrix4f implements Matrix {
     }
 
 /*
-[s 0 0 0]   [a b c d]   [sa sb sc sd]
-[0 s 0 0] * [e f g h] = [se sf sg sh]
-[0 0 s 0]   [i j k l]   [si sj sk sl]
+[x 0 0 0]   [a b c d]   [xa xb xc xd]
+[0 y 0 0] * [e f g h] = [ye yf yg yh]
+[0 0 z 0]   [i j k l]   [zi zj zk zl]
 [0 0 0 1]   [m n o p]   [m n o p]
 */
-    public scale(s: number): Matrix4f {
+    public scale(sX: number, sY: number, sZ: number): Matrix4f {
         let output = this.copy();
 
-        output.data[0] *= s;
-        output.data[1] *= s;
-        output.data[2] *= s;
+        output.data[0] *= sX;
+        output.data[1] *= sY;
+        output.data[2] *= sZ;
 
-        output.data[4] *= s;
-        output.data[5] *= s;
-        output.data[6] *= s;
+        output.data[4] *= sX;
+        output.data[5] *= sY;
+        output.data[6] *= sZ;
 
-        output.data[8] *= s;
-        output.data[9] *= s;
-        output.data[10] *= s;
+        output.data[8] *= sX;
+        output.data[9] *= sY;
+        output.data[10] *= sZ;
 
-        output.data[12] *= s;
-        output.data[13] *= s;
-        output.data[14] *= s;
+        output.data[12] *= sX;
+        output.data[13] *= sY;
+        output.data[14] *= sZ;
 
         return output;
     }
